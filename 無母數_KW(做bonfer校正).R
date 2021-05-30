@@ -1,43 +1,43 @@
 rm(list=ls())
-####Kruskal-Wallis test############¬Û¹ïÀ³CRDesign(¨C³B¸Ì¤º­Ó¼Æ¥i¥H¤£¦P)
-##x: Æ[´ú­È  
-##g: ¬Û¹ïÀ³Xªº¤À¸s (x©Mgªø«×¬Ûµ¥)
-##afa:ÅãµÛ¤ô·Ç  ¤@¯ë0.05©Î0.1
-##¨â¨â¤ñ¸û(Dunn) ÅãµÛ¤ô·Ç°µbonfer.ªk®Õ¥¿
-#output: KW test ÅãµÛ 1.KW²Î­p¶q df p.vale 
-#                    2.¨â¨â¤ñ¸ûªí(¦C¥Xdunn²Î­p¶q SE z ©M¬O§_ÅãµÛ0©Î1)(©ñ¦bd¼Ñ KW_compared_table.csv)
-#                    3.AB ¹Ï(»İ¾ã²z)(©ñ¦bd¼Ñ KW_AB_table.csv)
-#        KW test ¤£ÅãµÛ 1.KW²Î­p¶q df p.vale 
+####Kruskal-Wallis test############ç›¸å°æ‡‰CRDesign(æ¯è™•è£¡å…§å€‹æ•¸å¯ä»¥ä¸åŒ)
+##x: è§€æ¸¬å€¼  
+##g: ç›¸å°æ‡‰Xçš„åˆ†ç¾¤ (xå’Œgé•·åº¦ç›¸ç­‰)
+##afa:é¡¯è‘—æ°´æº–  ä¸€èˆ¬0.05æˆ–0.1
+##å…©å…©æ¯”è¼ƒ(Dunn) é¡¯è‘—æ°´æº–åšbonfer.æ³•æ ¡æ­£
+#output: KW test é¡¯è‘— 1.KWçµ±è¨ˆé‡ df p.vale 
+#                    2.å…©å…©æ¯”è¼ƒè¡¨(åˆ—å‡ºdunnçµ±è¨ˆé‡ SE z å’Œæ˜¯å¦é¡¯è‘—0æˆ–1)(æ”¾åœ¨dæ§½ KW_compared_table.csv)
+#                    3.AB åœ–(éœ€æ•´ç†)(æ”¾åœ¨dæ§½ KW_AB_table.csv)
+#        KW test ä¸é¡¯è‘— 1.KWçµ±è¨ˆé‡ df p.vale 
 #                     2.DO NOT significant! 
-#                     3.³B¸Ìµ¥¯Å¥­§¡­È¥Ñ¤j¨ì¤p±Æ¦C
+#                     3.è™•è£¡ç­‰ç´šå¹³å‡å€¼ç”±å¤§åˆ°å°æ’åˆ—
 
-##########KW.test¨ç¼Æ¶}©l#################################
+##########KW.testå‡½æ•¸é–‹å§‹#################################
 
 KW.test<-function(x,g,afa){
    g<-factor(g)
    t<-length(table(g)) #No. treatments
-   n<-length(x)        #Á`­Ó¼Æ
-   ni<-table(g)        #¦U³B²zªº­Ó¼Æ
-
-       R.mean<-tapply(rank(x),g,mean)
-       R.mean.s<-sort(R.mean,decreasing=T)
-
+   n<-length(x)        #ç¸½å€‹æ•¸
+   ni<-table(g)        #å„è™•ç†çš„å€‹æ•¸
+   
+   R.mean<-tapply(rank(x),g,mean)
+   R.mean.s<-sort(R.mean,decreasing=T)
+   
    kruskal.test(x,g) #kruskal-wllis method
    if(kruskal.test(x,g)$p.value<afa){
-       ni.s<-ni[order(R.mean,decreasing=T)] #³B²z¥Ñ¤j¨ì¤p±Æ§Ç
-
-       x.ta<-table(rank(x))
-       tie<-x.ta[x.ta>1]
-
-       D<-c()
-       d.ta<-c()
-       se.ta<-c()
-       na.s<-names(ni.s)    #³B²z¦W¦r¥Ñ¤j¨ì¤p±Æ§Ç
-       na.com<-c()
-       i=1
-       j=9
-       for(i in 1:t){       ####¨â¨âDunn¤ñ¸û²Î­p¶q©MSE####
-           for(j in i:t){
+      ni.s<-ni[order(R.mean,decreasing=T)] #è™•ç†ç”±å¤§åˆ°å°æ’åº
+      
+      x.ta<-table(rank(x))
+      tie<-x.ta[x.ta>1]
+      
+      D<-c()
+      d.ta<-c()
+      se.ta<-c()
+      na.s<-names(ni.s)    #è™•ç†åå­—ç”±å¤§åˆ°å°æ’åº
+      na.com<-c()
+      i=1
+      j=9
+      for(i in 1:t){       ####å…©å…©Dunnæ¯”è¼ƒçµ±è¨ˆé‡å’ŒSE####
+         for(j in i:t){
             if(i==j){
                next
             }
@@ -48,20 +48,20 @@ KW.test<-function(x,g,afa){
             D<-c(D,d/se)
             temp3<-paste(na.s[i],"VS",na.s[j],sep=" ")
             na.com<-c(na.com,temp3)
-          }
+         }
       }
-        D<-round(D,4)
-        d.ta<-round(d.ta,2)
-        se.ta<-round(se.ta,3)
-        afa.j<-afa/(t*(t-1))*2
-        Z<-round(qnorm(1-afa.j),3)
-        #Z<-round(qnorm(1-afa),3)
+      D<-round(D,4)
+      d.ta<-round(d.ta,2)
+      se.ta<-round(se.ta,3)
+      afa.j<-afa/(t*(t-1))*2
+      Z<-round(qnorm(1-afa.j),3)
+      #Z<-round(qnorm(1-afa),3)
       signif<-(D>Z)*1
-      com.table<-data.frame(na.com,d.ta,se.ta,D,Z,signif)   ###¨â¨â¤ñ¸ûªí#######
-      names(com.table)<-c("¤ñ¸û¦¡","³B¸Ìµ¥¯Å¥­§¡®t","SE","Dunn","Z","ÅãµÛ1¤£ÅãµÛ0")
-       Filena<-paste("d:/KW_compared_table_",T.x,".csv",sep="")
-      write.csv(com.table,Filena)  #######################¤ñ¸ûªí¦s¦bF¼Ñ¤¤KW_compared_table.csv
-     ####AB¤ñ¸ûªí###############################  
+      com.table<-data.frame(na.com,d.ta,se.ta,D,Z,signif)   ###å…©å…©æ¯”è¼ƒè¡¨#######
+      names(com.table)<-c("æ¯”è¼ƒå¼","è™•è£¡ç­‰ç´šå¹³å‡å·®","SE","Dunn","Z","é¡¯è‘—1ä¸é¡¯è‘—0")
+      Filena<-paste("d:/KW_compared_table_",T.x,".csv",sep="")
+      write.csv(com.table,Filena)  #######################æ¯”è¼ƒè¡¨å­˜åœ¨Fæ§½ä¸­KW_compared_table.csv
+      ####ABæ¯”è¼ƒè¡¨###############################  
       ab.table<-round(R.mean.s,2)
       count<-t-1
       count3<-0
@@ -70,39 +70,37 @@ KW.test<-function(x,g,afa){
       ab.temp[2:t][signif[1:(t-1)]==1]<-"."
       ab.table<-rbind(ab.table,ab.temp)
       for(i in 2:(t-1)){
-       
-       count0<-count+1
-       count<-count+(t-i)
-       ab.temp<-0
-       ab.temp[1:(i-1)]<-"."
-       ab.temp[i]<-letters[i]
-       ab.temp[(i+1):t][signif[count0:count]==0]<-letters[i]
-       ab.temp[(i+1):t][signif[count0:count]==1]<-'.'
-       ab.table<-rbind(ab.table,ab.temp)
+         
+         count0<-count+1
+         count<-count+(t-i)
+         ab.temp<-0
+         ab.temp[1:(i-1)]<-"."
+         ab.temp[i]<-letters[i]
+         ab.temp[(i+1):t][signif[count0:count]==0]<-letters[i]
+         ab.temp[(i+1):t][signif[count0:count]==1]<-'.'
+         ab.table<-rbind(ab.table,ab.temp)
       }
       rownames(ab.table)<-c("mean",na.s[1:(t-1)])
       ab.table1<-data.frame(ab.table)
       names(ab.table1)<-na.s
-       Filena<-paste("d:/KW_AB_table_",T.x,".csv",sep="")
-      write.csv(ab.table1,Filena) #####¤ñ¸ûªí¦s¦bF¼Ñ¤¤KW_AB_table.csv
-    ####AB¤ñ¸ûªí###############################  
+      Filena<-paste("d:/KW_AB_table_",T.x,".csv",sep="")
+      write.csv(ab.table1,Filena) #####æ¯”è¼ƒè¡¨å­˜åœ¨Fæ§½ä¸­KW_AB_table.csv
+      ####ABæ¯”è¼ƒè¡¨###############################  
       
       list(kruskal.test(x,g),com.table,ab.table1)
-
+      
    }else{
-
+      
       list(kruskal.test(x,g),"DO NOT significant!",R.mean.s)
-
+      
    }
 }
 
-##########KW.test¨ç¼Æµ²§ô#################################
+##########KW.testå‡½æ•¸çµæŸ#################################
 
 data1<-read.csv("D:/C.csv")
 x<-10-(data1[,4])
 g<-data1[,1]
 afa<-0.1
-T.x<-format(Sys.time(), "%F_%H%M%S") #¬ö¿ı¤é´Á®É¶¡
-
-KW.test(x,g,afa)
+T.x<-format(Sys.time(), "%F_%H%M%S") #ç´€éŒ„æ—¥æœŸæ™‚é–“a)
 
