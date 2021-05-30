@@ -1,27 +1,27 @@
 library(qtl)
 
-## A guide to QTL mapping via R/qtl by yu¾Çªøªºprotocol
-##estimate.map function¥i¥H­pºâ¶ZÂ÷
+## A guide to QTL mapping via R/qtl by yuå­¸é•·çš„protocol
+##estimate.map functionå¯ä»¥è¨ˆç®—è·é›¢
 fake_f2 <- read.cross(format="csv", file="D:/F2.csv", na.strings=".", genotypes=c("A","H","B","",""), alleles=c("A","B"), estimate.map=TRUE, map.function="kosambi")
-##­pºâ³sÂê¸s(¸ê®Æ¥ı¥ş³¡¶ñ1¸¹³sÂê¸s)
+##è¨ˆç®—é€£é–ç¾¤(è³‡æ–™å…ˆå…¨éƒ¨å¡«1è™Ÿé€£é–ç¾¤)
 fake_ungroup<-est.rf(fake_f2)
 fake_group<-formLinkageGroups(fake_ungroup,max.rf=0.4, min.lod=3)
 fake_group
-##­pºâMARKER¶¶§Ç
+##è¨ˆç®—MARKERé †åº
 revcross<-orderMarkers(fake_f2,chr=4, window=4, use.ripple=TRUE, map.function="kosambi")
 ?orderMarkers()
 x<-pull.map(revcross)
 write.csv(capture.output(x),paste0("D:/MARKER.csv"))
 plot.map(revcross,show.marke1r.names=TRUE)
 
-## A guide to QTL mapping via R/qtl by yu¾Çªøªºprotocol
-##estimate.map function¥i¥H­pºâ¶ZÂ÷
+## A guide to QTL mapping via R/qtl by yuå­¸é•·çš„protocol
+##estimate.map functionå¯ä»¥è¨ˆç®—è·é›¢
 hot <- read.cross(format="csv", file="D:/hot.csv", na.strings="-", genotypes=c("A","H","B","C"), alleles=c("A","B"), estimate.map=TRUE, map.function="kosambi")
-##­pºâ³sÂê¸s(¸ê®Æ¥ı¥ş³¡¶ñ1¸¹³sÂê¸s)
+##è¨ˆç®—é€£é–ç¾¤(è³‡æ–™å…ˆå…¨éƒ¨å¡«1è™Ÿé€£é–ç¾¤)
 fake_ungroup<-est.rf(hot)
 fake_group<-formLinkageGroups(fake_ungroup,max.rf=0.4, min.lod=3)
 fake_group
-##­pºâMARKER¶¶§Ç
+##è¨ˆç®—MARKERé †åº
 revcross<-orderMarkers(hot,chr=4, window=4, use.ripple=TRUE, map.function="kosambi")
 x<-pull.map(revcross)
 write.csv(capture.output(x),paste0("D:/MARKER.csv"))
@@ -44,10 +44,10 @@ summary(out.qtl)
 
 
 
-#©Î¬O³o¼Ë¡A¥i¥HÅª¨ú¢Ò¼Ñ©³¤Uªº¸ê®Æ
+#æˆ–æ˜¯é€™æ¨£ï¼Œå¯ä»¥è®€å–ï¼¤æ§½åº•ä¸‹çš„è³‡æ–™
 qtl <- read.cross ("csv" , "D:/" , "listeria.csv"
-                   + genotypes¡@= c¡@("BB","BC","CC"),
-                   + alleles¡@=¡@c¡@("B","C")
+                   + genotypesã€€= cã€€("BB","BC","CC"),
+                   + allelesã€€=ã€€cã€€("B","C")
                    + estimate.map = TRUE)
 
 ## Construction of genetic map by R/qt]
@@ -56,13 +56,13 @@ library(qtl)
 data(mapthis)
 summary(mapthis)
 
-##ÀË©w¦UºØmarker¬O§_²Å¦X¤ÀÂ÷¤ñ1:2:1
+##æª¢å®šå„ç¨®markeræ˜¯å¦ç¬¦åˆåˆ†é›¢æ¯”1:2:1
 gt <- geno.table(mapthis)
-gt[gt$P.value < 0.05/totmar(mapthis),] ##p value<0.05 -> ²Å¦X
-todrop <- rownames(gt[gt$P.value < 1e-10,]) ##§R°£¤@¨Ç©Ç¸ê®Æ
-mapthis <- drop.markers(mapthis, todrop)    ##§R°£¤@¨Ç©Ç¸ê®Æ
+gt[gt$P.value < 0.05/totmar(mapthis),] ##p value<0.05 -> ç¬¦åˆ
+todrop <- rownames(gt[gt$P.value < 1e-10,]) ##åˆªé™¤ä¸€äº›æ€ªè³‡æ–™
+mapthis <- drop.markers(mapthis, todrop)    ##åˆªé™¤ä¸€äº›æ€ªè³‡æ–™
 
-##­pºâ¦UºØ°ò¦]«¬AAABBBªº¤ñ¨Ò
+##è¨ˆç®—å„ç¨®åŸºå› å‹AAABBBçš„æ¯”ä¾‹
 g <- pull.geno(mapthis)
 gfreq <- apply(g, 1, function(a) table(factor(a, levels=1:3)))
 gfreq <- t(t(gfreq) / colSums(gfreq))

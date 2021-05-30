@@ -12,8 +12,8 @@ invisible(lapply(packages, library, character.only = TRUE))
 LSDOUT <- function(x){
    Var <- row.names (x$groups) 
    newGroup <- data.frame ( Var  , x$groups[,1:2] ) 
-   sort <- newGroup [ order ( newGroup$Var ), ] #«ö·ÓÅÜ¼Æ¦WºÙ±Æ§Ç
-   rownames(sort) <- c() #§R°£ROWNAME
+   sort <- newGroup [ order ( newGroup$Var ), ] #æŒ‰ç…§è®Šæ•¸åç¨±æ’åº
+   rownames(sort) <- c() #åˆªé™¤ROWNAME
    plotdata <- data.frame (sort,"N"= x$means [,3],"SEM"<- x$means[,2]/sqrt(x$means[,3]) ,"SD"=x$means[,2],"CV"=x$means[,2]/x$means[,1] )
    names(plotdata) <- c( "Factor","mean", "Sign","n" , "SEM",  "SD" ,"CV")
    write.csv(plotdata,paste0("D:/LSD",format(Sys.time(), "-%Y%b%d-%H%M%S"),".csv"))
@@ -44,7 +44,7 @@ for( i in c(1:4) ){
 sp1[,8]<-as.factor(sp1[,8])
 lmer( SL ~ Var+Bac+(1|Block)+Var*Bac*(1|Block) , data=sp1 )  %>% anova()
 str(Anova)
-#----¥Î[grepl]©Îsubset¤ÀÃş¥X¤£¦P¦±¶°¦A¶i¦æ¤ÀªR---#
+#----ç”¨[grepl]æˆ–subsetåˆ†é¡å‡ºä¸åŒæ›²é›†å†é€²è¡Œåˆ†æ---#
 BB__a<-sp1[grepl("A",sp1$Block),]
 BA<-subset(sp1,Block==c("A"))
 BC<-subset
@@ -52,17 +52,17 @@ paste("fitbit", 1:12, ".jpg", sep = "")
 
 for (i in c(1:4)) {
    sp2[,i]<-as.factor(sp2[,i])
-   }
+}
 head(sp2)
 
 comFula<-(Y~ year+season+rep+variety + 
              year:season + year/season/rep +
              year:variety +variety:season +
              year:season:variety
-          )
+)
 comFula<-(Y~ (1|year)+(1|season)+(1|rep)+variety+
              (1|year)*(1|season)
-             )
+)
 lmer(comFula,data=sp2) %>% Anova()
 
 
@@ -70,19 +70,19 @@ plot(aov1)
 
 lm1=lm(
    Yld~Year+Site+ Year:Site +Year/Site/Rep+Tomatovar+Year:Tomatovar+Site:Tomatovar+Year:Site:Tomatovar
-   )
+)
 for(i in as.integer(100*runif(10))
 ){
    x<-paste0("rawdata", i , ".jpg")
    print(x)
-   }
+}
 
 
-#¥Îaggregate¨ú¦U²Õ¥­§¡­È¡B¼Ğ·Ç®t¡B¼Ğ·Ç®t(sd)¡B¥­§¡­Èªº¼Ğ·Ç®t(se)
+#ç”¨aggregateå–å„çµ„å¹³å‡å€¼ã€æ¨™æº–å·®ã€æ¨™æº–å·®(sd)ã€å¹³å‡å€¼çš„æ¨™æº–å·®(se)
 
 dataSum(list(sp1$SL))
 
-#«e¤èÆ[´ú­È¥Hcbind(a,b)~ÅÜ¼Æ¤½¦¡¼gªk¡A©Î¥Hlist¦J¦C©Ò¦³Æ[´ú­È»PÅÜ¼Æ
+#å‰æ–¹è§€æ¸¬å€¼ä»¥cbind(a,b)~è®Šæ•¸å…¬å¼å¯«æ³•ï¼Œæˆ–ä»¥liståŒ¡åˆ—æ‰€æœ‰è§€æ¸¬å€¼èˆ‡è®Šæ•¸
 #x<-aggregate(cbind(SL,FL,LP)~Var+Bac+Block,data=sp1,mean)
 #y<-aggregate(cbind(SL,FL,LP)~Var+Bac+Block,data=sp1,sd,na.rm=T)
 #z<-aggregate(cbind(SL,FL,LP)~Var+Bac+Block,data=sp1,se)
@@ -93,37 +93,37 @@ dataSum(list(sp1$SL))
 #out %>% write.csv(paste0("D:/summary",format(Sys.time(), "%d-%b-%Y %H%M%S"),".csv"))
 
 
-#ÅÜ¤è§¡½è©Ê´ú¸Õ
-#1. KS.test:ÀË©w¨â­Ó¤À¥¬¬O§_¨Ó¦Û©ó¬Û¦P¤À¥¬
-#   ¦pªG¿é¤J"pnorm"´N¬OÀË©w¸Ó¤À¥¬¬O§_²Å¦X±`ºA¤À§G(Ho: a=±`ºA¤À¥¬)
-#   p<0.001 -> ¸Ó¼Æ¤£Äİ©ó±`ºA¤À¥¬
+#è®Šæ–¹å‡è³ªæ€§æ¸¬è©¦
+#1. KS.test:æª¢å®šå…©å€‹åˆ†å¸ƒæ˜¯å¦ä¾†è‡ªæ–¼ç›¸åŒåˆ†å¸ƒ
+#   å¦‚æœè¼¸å…¥"pnorm"å°±æ˜¯æª¢å®šè©²åˆ†å¸ƒæ˜¯å¦ç¬¦åˆå¸¸æ…‹åˆ†ä½ˆ(Ho: a=å¸¸æ…‹åˆ†å¸ƒ)
+#   p<0.001 -> è©²æ•¸ä¸å±¬æ–¼å¸¸æ…‹åˆ†å¸ƒ
 head(sp3)
-plot(ggqqplot(sp2$²£¶q))
-plot(ggqqplot(sp3$¹ê²É¼Æ))
-ks.test(x=sp2$²£¶q,"pnorm")
-ks.test(x=sp2$¤p°Ï,"pnorm")
-ks.test(x=sp3$¹ê²É­«,"pnorm")
+plot(ggqqplot(sp2$ç”¢é‡))
+plot(ggqqplot(sp3$å¯¦ç²’æ•¸))
+ks.test(x=sp2$ç”¢é‡,"pnorm")
+ks.test(x=sp2$å°å€,"pnorm")
+ks.test(x=sp3$å¯¦ç²’é‡,"pnorm")
 
 x<-ks.test(x=sp1$FL,"pnorm")
 capture.output(x)
 
-#2. qqplot¡Aggqqplot©Îqqnorm¬Ò¥i
-ggqqplot(sp2$²£¶q)
+#2. qqplotï¼Œggqqplotæˆ–qqnormçš†å¯
+ggqqplot(sp2$ç”¢é‡)
 
 qqnorm(sp1$SL)
 
-#3.  	Shapiro-Wilk normality test¡AP<0.05ÅãµÛ«h¤£²Å±`ºA
+#3.  	Shapiro-Wilk normality testï¼ŒP<0.05é¡¯è‘—å‰‡ä¸ç¬¦å¸¸æ…‹
 shapiro.test(sp1$LP)
 
 #4.  Levene'test
-#ÀË©w¨â²Õ¼Æ´ÓªºÅÜ²§¼Æ¬O§_¬Û¦P
+#æª¢å®šå…©çµ„æ•¸æ¤çš„è®Šç•°æ•¸æ˜¯å¦ç›¸åŒ
 leveneTest(SL~Var,sp1)
 
 
-##¬ÛÃö¤ÀªR(¥i²¤¹L)
-#method=spearman ¬OµL¥À¼Æ²Î­pª©¥»ªº¥Öº¸´Ë¬ÛÃö«Y¼Æ
-#¦]¬°¥Öº¸´Ë¬ÛÃö«Y¼Æ»İ­n¨â­ÓÅÜ¼Æ²Å¦X±`ºA¤À§G
-#¦pªG²Å¦X±`ºA¡A¥i¥H§â«á­±method§R°£
+##ç›¸é—œåˆ†æ(å¯ç•¥é)
+#method=spearman æ˜¯ç„¡æ¯æ•¸çµ±è¨ˆç‰ˆæœ¬çš„çš®çˆ¾æ£®ç›¸é—œä¿‚æ•¸
+#å› ç‚ºçš®çˆ¾æ£®ç›¸é—œä¿‚æ•¸éœ€è¦å…©å€‹è®Šæ•¸ç¬¦åˆå¸¸æ…‹åˆ†ä½ˆ
+#å¦‚æœç¬¦åˆå¸¸æ…‹ï¼Œå¯ä»¥æŠŠå¾Œé¢methodåˆªé™¤
 x=sp1$SL
 y=sp1$FL
 cor(x,y)
@@ -131,15 +131,15 @@ cor.test(x,y,method='spearman')
 summary(cor.test(x,y,method='spearman'))
 
 
-x<-lm(²£¶q~«~ºØ+¦~+©u+­«½Æ,data=sp2)
-summary(aov(²£¶q~«~ºØ+¦~+©u+­«½Æ,data=sp2))
-summary(aov(ÁJ¼Æ~«~ºØ+¦~+©u+­«½Æ,data=sp3))
-summary(aov(Á`­«~«~ºØ+¦~+©u+­«½Æ,data=sp3))
-summary(aov(¸Z¹ê²v~«~ºØ+¦~+©u+­«½Æ+¦~*­«½Æ*©u*«~ºØ*¦~,data=sp3))
-summary(aov(¤@ÁJ²É¼Æ~«~ºØ+¦~+©u+­«½Æ,data=sp3))
-summary(aov(¤d²É­«~«~ºØ+¦~+©u+­«½Æ,data=sp3))
+x<-lm(ç”¢é‡~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp2)
+summary(aov(ç”¢é‡~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp2))
+summary(aov(ç©—æ•¸~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp3))
+summary(aov(ç¸½é‡~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp3))
+summary(aov(ç¨”å¯¦ç‡~å“ç¨®+å¹´+å­£+é‡è¤‡+å¹´*é‡è¤‡*å­£*å“ç¨®*å¹´,data=sp3))
+summary(aov(ä¸€ç©—ç²’æ•¸~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp3))
+summary(aov(åƒç²’é‡~å“ç¨®+å¹´+å­£+é‡è¤‡,data=sp3))
 
- ##anova
+##anova
 sp1<-read.csv(file="D:/bb.csv")
 head(sp1)
 aov1<-aov(SL~Var+Bac+Plant+Bac*Var*Plant,data=sp1)
@@ -166,13 +166,13 @@ o<-LSD.test(aov1,c("bb$Var","bb$Bac"))
 o$means
 
 
-##µL¥À¼Æ¤ÀªRKSÀË©w³æ¦]¤l
+##ç„¡æ¯æ•¸åˆ†æKSæª¢å®šå–®å› å­
 k1 = capture.output ( kruskal.test ( SL ~ Var , data = sp1))
 k2 <- capture.output ( kruskal.test ( SL ~ Bac , data = sp1))
 
-#µL¥À¼Æ¤ÀªRwilcox¨â¨âÀË©w¡Apairwise
-#Bac¤ºSL¹ïVar°µ¨â¨â¤ñ¸û (¥ı¥Îsplit±NÅÜ¼Æ¤À²Õ¦¨¤£¦Plist,¦A¥Îlapply¹ï¨C­ÓÅÜ¼Æ¶i¦æÀË©w)
-#Var¤ºSL¹ïBac°µ¨â¨â¤ñ¸û
+#ç„¡æ¯æ•¸åˆ†æwilcoxå…©å…©æª¢å®šï¼Œpairwise
+#Bacå…§SLå°Varåšå…©å…©æ¯”è¼ƒ (å…ˆç”¨splitå°‡è®Šæ•¸åˆ†çµ„æˆä¸åŒlist,å†ç”¨lapplyå°æ¯å€‹è®Šæ•¸é€²è¡Œæª¢å®š)
+#Varå…§SLå°Bacåšå…©å…©æ¯”è¼ƒ
 #-----#
 wcTest<-function(data,ob,group){
    attach(data)
@@ -196,11 +196,11 @@ write.csv(outData,paste0("D:/wilcox",format(Sys.time(),"%d-%b-%Y%H%M%S"),".csv")
 
 
 
-#friedman.test¤£±µ¨ü­«½Æ¡A­n¥ı¥­§¡
+#friedman.testä¸æ¥å—é‡è¤‡ï¼Œè¦å…ˆå¹³å‡
 x<-dataSum( list(sp1$FL,sp1$SL,sp1$LP), list(sp1$Var,sp1$Bac,sp1$Plant) )
 head(x)
-boxplot(SL ~ Var, data = bbbbb, xlab = "«~ºØ", ylab = "¯f´³ªø", main = "BB")
-boxplot(FL ~ Var, data = x, xlab = "«~ºØ", ylab = "¯f´³ªø", main = "BB")
+boxplot(SL ~ Var, data = bbbbb, xlab = "å“ç¨®", ylab = "ç—…æ–‘é•·", main = "BB")
+boxplot(FL ~ Var, data = x, xlab = "å“ç¨®", ylab = "ç—…æ–‘é•·", main = "BB")
 friedman.test ( SL ~ Var | Block , data = x)
 edit(sp1)
 
@@ -208,7 +208,6 @@ edit(sp1)
 ?t.test
 head(sp1)
 t.test( lod~Var,data=sp1,
-       alternative = c("two.sided", "less", "greater"),
-       mu = 0, paired = FALSE, var.equal = TRUE,
-       conf.level = 0.95)
-
+        alternative = c("two.sided", "less", "greater"),
+        mu = 0, paired = FALSE, var.equal = TRUE,
+ 
