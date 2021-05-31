@@ -20,6 +20,15 @@ LSDOUT <- function(x){
    return(plotdata)
 }
 
+wcTest<-function(data,ob,group){
+   attach(data)
+   dataGroupList <- split(ob,group)
+   dataOut <-
+      lapply(dataGroupList , function(x) pairwise.wilcox.test(ob ,group))
+   detach()
+   return(dataOut)
+}
+
 dataSum<-function ( ob , var){
    se<-function(x){sd(x,na.rm = T)/sqrt(length(x))}
    out<-aggregate(ob, by = var, FUN= function(x) c("mean" = mean(x), "median" = median(x),"SD"=sd(x), "SE"=se(x),N=length(x),"CV"=cv <- sd(x) / mean(x)))
@@ -185,20 +194,16 @@ wcTest<-function(data,ob,group){
 #-----#
 sp1 <- read.csv ( "D:/bball.csv" , header = T , sep = "," )
 sp1 %>% edit()
-wcTest(sp1,sp1$LP,sp1$Var)
-outData <- capture.output(list(dataList1,dataList2))
-write.csv(outData,paste0("D:/wilcox",format(Sys.time(),"%d-%b-%Y%H%M%S"),".csv"))
+
 
 #----NOT RUM----#
 #sp1GVar <- split(sp1,sp1$Var)sp1GBac <- split(sp1,sp1$Bac)sp1GVar %>% lapply(., function(x) pairwise.wilcox.test(x$SL,x$Bac))sp1GVar %>% lapply(., function(x) pairwise.wilcox.test(x$LP,x$Bac))sp1GBac %>% lapply(., function(x) pairwise.wilcox.test(x$SL,x$Var))sp1GBac %>% lapply(., function(x) pairwise.wilcox.test(x$LP,x$Var))#
 
-
-
-
-
 #friedman.test不接受重複，要先平均
 x<-dataSum( list(sp1$FL,sp1$SL,sp1$LP), list(sp1$Var,sp1$Bac,sp1$Plant) )
-head(x)
+lm.
+head(x,n=12)
+
 boxplot(SL ~ Var, data = bbbbb, xlab = "品種", ylab = "病斑長", main = "BB")
 boxplot(FL ~ Var, data = x, xlab = "品種", ylab = "病斑長", main = "BB")
 friedman.test ( SL ~ Var | Block , data = x)
@@ -209,5 +214,5 @@ edit(sp1)
 head(sp1)
 t.test( lod~Var,data=sp1,
         alternative = c("two.sided", "less", "greater"),
-        mu = 0, paired = FALSE, var.equal = TRUE,
+        mu = 0, paired = FALSE, var.equal = TRUE)
  
