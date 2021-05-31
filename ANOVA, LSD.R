@@ -46,6 +46,15 @@ edit ( sp3 <- read.csv ( "D:/yieldcom.csv" , header = T , sep = "," ))
 edit ( sp4 <- read.csv ( "D:/PlantHeight.csv" , header = T , sep = "," ))
 write.csv(sp1,paste0("D:/summary",format(Sys.time(),"%d-%b-%Y %H%M%S"),".csv"))
 
+BD<-read.csv("D:/OneDrive/TTD-CHL/Rworking/DataSet/Breeding.csv")
+str
+dataSum(list(BD[,2:6]),list(BD$var))
+
+BD2<-data.frame("var"=BD$var,"SL"=rowMeans(BD[,2:4],na.rm=TRUE),"SW"=BD$X3SW,"SN"=BD$X3SN)
+
+
+BD2 %>% head(n=20)
+
 for( i in c(1:4) ){
    sp1[,i]<-as.factor(sp1[,i])
 }
@@ -67,8 +76,7 @@ head(sp2)
 comFula<-(Y~ year+season+rep+variety + 
              year:season + year/season/rep +
              year:variety +variety:season +
-             year:season:variety
-)
+             year:season:variety)
 comFula<-(Y~ (1|year)+(1|season)+(1|rep)+variety+
              (1|year)*(1|season)
 )
@@ -198,7 +206,7 @@ sp1 %>% edit()
 
 #----NOT RUM----#
 #sp1GVar <- split(sp1,sp1$Var)sp1GBac <- split(sp1,sp1$Bac)sp1GVar %>% lapply(., function(x) pairwise.wilcox.test(x$SL,x$Bac))sp1GVar %>% lapply(., function(x) pairwise.wilcox.test(x$LP,x$Bac))sp1GBac %>% lapply(., function(x) pairwise.wilcox.test(x$SL,x$Var))sp1GBac %>% lapply(., function(x) pairwise.wilcox.test(x$LP,x$Var))#
-
+ 
 #friedman.test不接受重複，要先平均
 x<-dataSum( list(sp1$FL,sp1$SL,sp1$LP), list(sp1$Var,sp1$Bac,sp1$Plant) )
 lm.
