@@ -1,5 +1,3 @@
-R 
-
 # Package names
 packages <- c("ggplot2","carData","lme4","lmerTest","magrittr" , "dplyr", "tidyr", "reshape2", "agricolae","car", "multcomp",  "rcompanion", "openxlsx", "ggpubr", "carData", "magrittr","corrplot", "FSA", "dslabs", "magrittr", "tidyverse")
 upgrade(packageStatus())
