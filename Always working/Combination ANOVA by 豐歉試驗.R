@@ -1,11 +1,12 @@
 upgrade(packageStatus())
-packages <- c("ggplot2","carData","lme4","lmerTest","magrittr" , "dplyr", "tidyr", "reshape2", "agricolae","car", "multcomp",  "rcompanion", "openxlsx", "ggpubr", "carData", "magrittr","corrplot", "FSA", "dslabs", "magrittr", "tidyverse","statgenGxE","statgenSTA")
+packages <- c("ggplot2","carData","lme4","lmerTest","magrittr" , "dplyr", "tidyr", "reshape2", "agricolae","car", "multcomp",  "rcompanion", "openxlsx", "ggpubr", "carData", "magrittr","corrplot", "FSA", "dslabs", "magrittr", "tidyverse","statgenGxE","statgenSTA","funModeling")
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
   install.packages(packages[!installed_packages])
 }
 invisible(lapply(packages, library, character.only = TRUE))
+
 #-----------------綜合變方分析example------------#
 # using statgenGxE to analysis the GE interaction
 # https://cran.r-project.org/web/packages/statgenGxE/vignettes/statgenGxE.html
@@ -15,23 +16,30 @@ dropsPheno %>% head()
 str(dropsPheno)
 
 # The input for GxE analysis in the statgenGxE package is an object of class TD (Trial Data). 
-
 # For GxE analysis it is enough to specify the genotype and trial option of the createTD function.
-
 ## Create a TD object from dropsPheno.
+edit(dropsPheno)
+table(dropsPheno$Experiment)
+Y<-read.csv(file="D:/oneDrive/TTD-CHL/Rworking/DataSet/yield.csv")
+table(Y)
+is.null(any(Y))
+str(dropsPheno)
+
+dropTDY <-statgenSTA::createTD(data = Y, genotype = "variety", trial = "experiment")
 
 dropsTD <- statgenSTA::createTD(data = dropsPheno, genotype = "Variety_ID", trial = "Experiment")
-dropsTD %>%  str()
 
 ## Before doing any analysis, we can first have a look at the contents of the data
 ## To explore heterogeneity of genetic variance we can create a <box plot>.
-
 ## Coloring the boxes by environmental scenario will provide valuable extra information.
 
 ## Create a box plot of dropsTD.
 ## Color the boxes based on the variable scenarioFull.
 ## Plot in  descending order.
 plot(dropsTD, plotType = "box", traits = "grain.yield", colorTrialBy = "scenarioFull", orderBy = "descending")
+
+plot(dropTDY,plotType = "box",traits = "Y",colorTrialBy = "trial",oderBy="descending")
+
 # x軸=環境 y軸=產量，scenarioFull可視為期作因子
 
 # From the plot it is clear that the trials in the hot, water deficient environments have a lower median and range than the other trials.
@@ -43,6 +51,8 @@ plot(dropsTD, plotType = "box", traits = "grain.yield", colorTrialBy = "scenario
 ## Color the histograms for trials based on the variable scenarioFull.
 
 plot(dropsTD, plotType = "scatter", traits = "grain.yield", colorGenoBy = "geneticGroup",colorTrialBy = "scenarioFull", trialOrder = c("Gai12W", "Kar13R", "Kar12W", "Kar13W", "Mar13R", "Mur13W","Mur13R", "Ner12R", "Cam12R", "Cra12R"))
+
+plot(dropsTD, plotType = "scatter", traits = "Y", colorGenoBy = "geneticGroup",colorTrialBy = "trial", trialOrder = c("971,972,981,982,991,992,1001,1002,1011,1012,1021,1022,1031,1032,1041,1042,1051,1052,1061,1062,1071,1072,1081,1082,10911092,"))
 
 # In all plots the default colors for both genotype groups and trial groups are chosen from a predefined color palette. For genotype groups the color palette is “Dark 2,” for trial groups it is “Alphabet.” See here for an overview of these colors.
 # It is possible to specify different colors for genotype groups and trial groups per plot using the options colGeno and colTrial respectively. Also, more conveniently, the default colors can be set using the options statgen.genoColors and statgen.trialColors.
@@ -88,17 +98,22 @@ trait = scenario + scenario:trial + genotype + genotype:scenario + genotype:scen
 # The function first fits a model where all model terms are included as fixed terms. 
 # Based on the ANOVA table of this model, terms in the fixed part of the model that are likely to give a problem when fitting the mixed model are removed because of the reduced connectivity and number of available observations to estimate that model term. Also a warning is printed if the mean of sum of squares for a model term points to a possible zero variance component in the mixed model.
 
+# Model fitted with all terms as random
+# Then a model is fitted where all model terms are included as random terms. Based on the variance components in this model the percentage of variance explained by each of the model components is determined. The percentages of variance are printed in the model summary, together with the variance components. The latter are presented on a standard deviation scale.
 
-
-Model fitted with all terms as random
-Then a model is fitted where all model terms are included as random terms. Based on the variance components in this model the percentage of variance explained by each of the model components is determined. The percentages of variance are printed in the model summary, together with the variance components. The latter are presented on a standard deviation scale.
-
-Mixed model
-Finally a mixed model is fitted as specified in the table above. Based on this model, variance components can be extracted, heritabilities on a line mean basis (across all trials) can be computed and predictions can be made. It is also possible to plot the results.
+# Mixed model
+# Finally a mixed model is fitted as specified in the table above. Based on this model, variance components can be extracted, heritabilities on a line mean basis (across all trials) can be computed and predictions can be made. It is also possible to plot the results.
 
 ## Fit a model where trials are nested within scenarios.
 dropsVarComp <- gxeVarComp(TD = dropsTD, trait = "grain.yield", nestingFactor = "scenarioFull")
 summary(dropsVarComp)
+dropsTD %>% head()
+
+trait = year + year:trial + genotype + genotype:year + genotype:year:trial	, nestingFactor = "year"
+rm(dropsVarComp)
+
+dropsVarComp <- gxeVarComp(TD = dropTDY, trait = "Y", nestingFactor = "year") %>% summary(x)
+
 #> Fitted model formula
 #> grain.yield ~ scenarioFull + scenarioFull:trial + (1 | genotype) + (1 | genotype:scenarioFull) 
 #> 
@@ -125,6 +140,7 @@ The diagnostics for the fitted model can be printed using the diagnostics functi
 
 ## Print diagnostics - output suppressed because of the large number of rows.
 diagnostics(dropsVarComp)
+
 Extracting the variance components from the fitted model can be done using the vc function. The heritability (across trials) is computed using herit.
 
 ## Extract variance components.
@@ -140,6 +156,7 @@ A plot can be made of the square roots of the variance component estimates. Thes
 
 ## Plot the results of the fitted model.
 plot(dropsVarComp)
+
 Predictions for the mixed model can be made for model terms that represent different levels of data aggregation; for the genotype main effect or for genotypic performance in grouped environments, or for genotypic performance in individual trials. These levels can be specified by the parameter predictLevel.
 
 ## Predictions of the genotype main effect.
@@ -153,7 +170,7 @@ head(predGeno)
 #> 5     A374          7.470
 #> 6     A375          6.650
 ## predictions at the level of genotype x scenarioFull.
-predGenoTrial <- predict(dropsVarComp, predictLevel = "scenarioFull")
+predGenoTrial <- predict(dropsVarComp, predictLevel = "trial")
 head(predGenoTrial)
 #>   genotype scenarioFull predictedValue
 #> 1    11430      WW.Cool         10.681
@@ -162,74 +179,21 @@ head(predGenoTrial)
 #> 4     A347      WW.Cool          8.751
 #> 5     A374      WW.Cool         10.970
 #> 6     A375      WW.Cool          9.775
-3 Finlay-Wilkinson Analysis
-With the Finlay-Wilkinson Analysis (Finlay and Wilkinson 1963) we describe genotype by environment interaction by the heterogeneity of the slopes of a regression of individual genotypic performance on an environmental index. The environmental index is the average of all genotypes in an environment. The intercept expresses general performance across all environments, the slope represents adaptability, and the residuals may indicate a measure for stability.
-
-The model fitted in the analysis is yij=μ+Gi+βiEj+ϵij, where yij is the phenotypic value of genotype i in environment j, μ is the general mean, Gi is the genotypic effect, βi a sensitivity parameters, Ej the environment effect and ϵij a residual.
-
-In the statgenGxE package this analysis can be done using the gxeFW function. The model described above is fitted using an alternating regression algorithm. First, using starting values for βi and Gi, Ej is estimated. Next, Ej is assumed known and βi and Gi are estimated. This process is continued until convergence, i.e. until the change in βi between iterations is less then a specified tolerance (default 0.001). When estimating parameters, missing observations are estimated as well.
-
-By default all trials in the TD object are used in the analysis, but this can be restricted using the parameter trials. The genotypes included in the analysis can be restricted using genotypes.
 
 ## Perform a Finlay-Wilkinson analysis for all trials.
-dropsFW <- gxeFw(TD = dropsTD, trait = "grain.yield")
+dropsFW <- gxeFw(TD = dropTDY, trait = "Y")
 summary(dropsFW)
-#> Environmental effects 
-#> =====================
-#>     trial      envEff se_envEff  envMean se_envMean rank
-#> 1  Cam12R -4.93016532 0.0710838  1.97041   0.526746    9
-#> 2  Cra12R -5.41700099 0.0710838  1.48358   0.564494   10
-#> 3  Gai12W  4.29088420 0.0710838 11.19145   0.478808    1
-#> 4  Kar12W  2.81602440 0.0710838  9.71659   0.378874    3
-#> 5  Kar13R  2.98347060 0.0710838  9.88404   0.389212    2
-#> 6  Kar13W  1.14169667 0.0710838  8.04227   0.298929    4
-#> 7  Mar13R  0.83532848 0.0710838  7.73590   0.290526    5
-#> 8  Mur13R -0.00198925 0.0710838  6.89858   0.280534    7
-#> 9  Mur13W  0.53202700 0.0710838  7.43260   0.284630    6
-#> 10 Ner12R -2.25027579 0.0710838  4.65030   0.346565    8
-#> 
-#> Anova 
-#> =====
-#>                 Df Sum Sq Mean Sq  F value Pr(>F)    
-#> genotype       245   2321     9.5   11.986 <2e-16 ***
-#> trial            9  23677  2630.8 3329.261 <2e-16 ***
-#> Sensitivities  245    404     1.6    2.088 <2e-16 ***
-#> Residual      1960   1549     0.8                    
-#> Total         2459  27951    11.4                    
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Most sensitive genotypes
-#> ========================
-#>   genotype    sens rank   se_sens genMean se_genMean MSdeviation
-#>     Lo1251 1.34779    1 0.0904284 9.03024   0.280534    1.507974
-#>   DK78371A 1.29340    2 0.0904284 7.34072   0.280534    0.313889
-#>      PHG83 1.29337    3 0.0904284 7.79922   0.280534    1.447104
-#>      FR697 1.27416    4 0.0904284 7.48625   0.280534    0.917458
-#>  SC-Malawi 1.26473    5 0.0904284 7.12909   0.280534    1.272097
-Four types of plots can be made to investigate the output from the analysis. plotType = "scatter" creates three scatter plots where genotypic mean, square root of the mean squared deviation and sensitivity are plotted against each other.
 
+Four types of plots can be made to investigate the output from the analysis. plotType = "scatter" creates three scatter plots where genotypic mean, square root of the mean squared deviation and sensitivity are plotted against each other.
 ## Create scatter plot for Finlay Wilkinson analysis.
 ## Color genotypes by geneticGroup.
-plot(dropsFW, plotType = "scatter", colorGenoBy = "geneticGroup")
 
-With plotType = "line" a plot with fitted lines for all genotypes in the analysis is created.
+plot(dropsFW, plotType = "scatter", colorGenoBy = "genotype")
+TD
+plot(dropsFW, plotType = "trellis", genotype = c("TT30,TK2,TNG67"))
 
-## Create line plot for Finlay Wilkinson analysis.
-## Color genotypes by geneticGroup.
-plot(dropsFW, plotType = "line", colorGenoBy = "geneticGroup")
 
-plotType = "trellis" creates a trellis plot with observations and slopes per genotype. At most 64 genotypes are plotted. It is possible to select a subset of genotypes for plotting using the parameter genotypes.
 
-## Create trellis plot for Finlay Wilkinson analysis.
-## Restrict to first 5 genotypes.
-plot(dropsFW, plotType = "trellis", genotypes = c("11430", "A3", "A310", "A347", "A374"))
-
-plottType = "scatterFit" creates a scatter plot of fitted values in the trial with the highest environmental effect against the fitted values in the trial with the lowest environmental effect.
-
-## Create scatter plot of fitted values for Finlay Wilkinson analysis.
-## Color genotypes by geneticGroup.
-plot(dropsFW, plotType = "scatterFit", colorGenoBy = "geneticGroup")
 
 4 AMMI Analysis
 The Additive Main Effects and Multiplicative Interaction (AMMI) model fits a model which involves the Additive Main effects (i.e. genotype and trial) along with Multiplicative Interaction effects. The additive effects are the classical ANOVA main effects for genotype and environment, the multiplicative effects follow from a principal component analysis on the interaction residuals (= genotype by environment means after adjustment for additive genotype and environment effects). This results in an interaction characterized by Interaction Principal Components (IPCA) enabling simultaneous plotting of genotypes and trials.
@@ -241,8 +205,20 @@ After imputation the model fitted in the analysis is yij=μ+Gi+Ej+ΣMm=1γmiδmj
 The AMMI analysis can be performed with the statgenGxE package using the function gxeAmmi.
 
 ## Run gxeAmmi for grain.yield.
-dropsAm <- gxeAmmi(TD = dropsTD, trait = "grain.yield")
+Y2<-aggregate(list(Y$Y),list(Y$experiment,Y$variety),mean)
+names(Y2)<-c("experiment","var","Y")
+head(Y2)
+table(Y2$var,Y2$experiment)
+dropTDY2 <-statgenSTA::createTD(data = Y, genotype = "variety", trial = "experiment")
+
+dropsAm <- gxeAmmi(TD = dropTDY2, trait = "Y")
 summary(dropsAm)
+write.csv(Y2,"D:/summ.csv")
+dropsGGE <- gxeGGE(TD = dropTDY2, trait = "Y")
+summary(dropsGGE) 
+library(agricolae)
+stability.par(Y,3,,alpha=0.1,main=NULL,cova = FALSE,name.cov=NULL,
+              
 #> Principal components 
 #> ====================
 #>                            PC1     PC2
